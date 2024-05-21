@@ -15,7 +15,7 @@ func main() {
 
 	c := cron.New()
 
-	_, err := c.AddFunc("@every 10s", apodService.DailyTask)
+	_, err := c.AddFunc("@daily", apodService.DailyTask)
 	if err != nil {
 		fmt.Println("Error scheduling task:", err)
 		return

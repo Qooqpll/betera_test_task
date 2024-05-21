@@ -23,6 +23,6 @@ func (a *apodController) All(context *gin.Context) {
 	response := a.apodService.All(date)
 	context.JSON(
 		http.StatusOK,
-		gin.H{"response": response},
+		gin.H{"data": response},
 	)
 }
