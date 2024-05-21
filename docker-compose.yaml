@@ -1,0 +1,54 @@
+services:
+  web:
+    container_name: "api"
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/BeteraTestTask
+    networks:
+      - betera
+    env_file:
+      - ./app/.env
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile.cron
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - betera
+    env_file:
+      - ./app/.env
+
+  db:
+    image: postgres:13
+    container_name: db_betera
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=goblog
+    ports:
+      - "5432:5432"
+    volumes:
+      - gobetera_postgres:/var/lib/postgresql/data
+    networks:
+      - betera
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  gobetera_postgres:
+
+networks:
+  betera:
+    driver: bridge

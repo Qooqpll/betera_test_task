@@ -1,0 +1,19 @@
+FROM golang:1.22-alpine as builder
+
+WORKDIR /app
+
+COPY app/go.mod app/go.sum ./
+RUN go mod download
+
+COPY app ./
+COPY app/.env .
+
+UN go build -o /bin/server ./cmd/server/main.go
+
+FROM alpine:latest
+
+COPY --from=builder /bin/server /bin/server
+
+EXPOSE 8080
+
+ENTRYPOINT ["/bin/server"]
